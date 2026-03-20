@@ -114,7 +114,7 @@ def coerce_schema(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def main(poll_interval):
+def main(poll_interval: int=5):
     delta_path = str(DELTA_DIR)
     events = {}  # Track unique events by ID
 
@@ -192,6 +192,12 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Stream earthquake data from USGS to Delta Lake"
     )
-    parser.add_argument("refresh_rate", type=int, help="Poll interval in seconds")
+    parser.add_argument(
+        "refresh_rate",
+        nargs="?",
+        default=5,
+        type=int,
+        help="Poll interval in seconds (default: 5)",
+    )
     args = parser.parse_args()
     main(args.refresh_rate)

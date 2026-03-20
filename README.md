@@ -59,18 +59,50 @@ pip install -r requirements.txt
 ### Run the streaming application
 
 ```bash
-# Stream earthquake data with 10-second poll interval
+# Stream earthquake data with the default 5-second poll interval
+uv run main.py
+
+# Stream earthquake data with a custom 10-second poll interval
 uv run main.py 10
 
 # Or with pip
+python main.py
+
+# Or with a custom interval
 python main.py 10
 ```
 
-The argument specifies the poll interval in seconds. The application will:
+If omitted, the poll interval defaults to 5 seconds. The application will:
 1. Fetch latest earthquakes from USGS API
 2. Identify new events (by ID) not already in the Delta table
 3. Write new events to Delta Lake with automatic date partitioning
 4. Continue polling until interrupted (Ctrl+C)
+
+### Run the live dashboard
+
+Start the ingestion job in one terminal:
+
+```bash
+uv run main.py
+```
+
+Then start the Streamlit dashboard in a second terminal:
+
+```bash
+uv run streamlit run viewer.py
+```
+
+The dashboard refreshes automatically and shows:
+- the latest Delta table version
+- new earthquake events detected since the previous refresh
+- a live map filtered by magnitude
+- the most recent rows from the Delta table
+
+If you are using WSL and the browser does not open automatically, open `http://localhost:8501` from Windows or run:
+
+```bash
+explorer.exe http://localhost:8501
+```
 
 ### Example output
 
@@ -100,6 +132,7 @@ Open `notebooks/streaming_delta_ingestion.ipynb` for analysis and visualization 
 - **geopandas** (≥1.1.1): Geospatial data analysis
 - **requests** (≥2.32.5): HTTP requests to USGS API
 - **plotly** (≥6.5.0): Interactive visualizations
+- **streamlit** (≥1.55.0): Live dashboard UI
 
 ## Data Schema
 
