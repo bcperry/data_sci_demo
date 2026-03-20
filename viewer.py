@@ -110,15 +110,15 @@ def render_dashboard(refresh_interval: int, min_magnitude: float, max_rows: int)
         st.plotly_chart(create_map_view(filtered_df), width="stretch")
 
     newest_rows = filtered_df.head(max_rows)
-    changed_rows = filtered_df.loc[filtered_df["id"].astype(str).isin(new_ids)].head(max_rows)
+    changed_rows = filtered_df.loc[filtered_df["id"].astype(str).isin(new_ids)].head(
+        max_rows
+    )
 
     latest_col, changes_col = st.columns(2)
     with latest_col:
         st.subheader("Latest events")
         st.dataframe(
-            newest_rows[
-                ["time_utc", "id", "place", "magnitude", "depth_km", "status"]
-            ],
+            newest_rows[["time_utc", "id", "place", "magnitude", "depth_km", "status"]],
             width="stretch",
             hide_index=True,
         )
@@ -156,7 +156,9 @@ def main():
     with st.sidebar:
         st.header("Controls")
         auto_refresh = st.toggle("Auto refresh", value=True)
-        refresh_interval = st.slider("Refresh interval (seconds)", min_value=1, max_value=30, value=5)
+        refresh_interval = st.slider(
+            "Refresh interval (seconds)", min_value=1, max_value=30, value=5
+        )
         min_magnitude = st.slider(
             "Minimum magnitude",
             min_value=0.0,
@@ -164,7 +166,9 @@ def main():
             value=0.0,
             step=0.1,
         )
-        max_rows = st.slider("Rows to show", min_value=10, max_value=100, value=25, step=5)
+        max_rows = st.slider(
+            "Rows to show", min_value=10, max_value=100, value=25, step=5
+        )
         st.button("Refresh now", width="stretch")
 
     run_every = f"{refresh_interval}s" if auto_refresh else None

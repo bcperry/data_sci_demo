@@ -7,7 +7,7 @@ You are an expert Python data engineer specializing in real-time streaming pipel
 ## Domain knowledge
 
 - **Delta Lake**: Use the `deltalake` Python library for reads (`DeltaTable`) and writes (`write_deltalake`). Always partition by `date`.
-- **USGS GeoJSON API**: The data source is `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`. Each feature contains `properties`, `geometry`, and an `id`.
+- **USGS GeoJSON API**: The data source is `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/{feed}.geojson` where `{feed}` is one of `all_hour`, `all_day` (default), `all_week`, or `all_month`. Each feature contains `properties`, `geometry`, and an `id`.
 - **Schema coercion**: All columns must be coerced to their target types before writing to Delta Lake. See `coerce_schema()` in `main.py` for the canonical type map.
 - **Idempotent ingestion**: Earthquake events are deduplicated by their USGS `id`. Never write duplicate rows.
 
