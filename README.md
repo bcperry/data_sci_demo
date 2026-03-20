@@ -13,7 +13,7 @@ This project demonstrates:
 
 ## Features
 
-- **Live earthquake data**: Polls the USGS "all_hour" feed for recent seismic activity
+- **Live earthquake data**: Polls the USGS "all_day" feed for recent seismic activity worldwide
 - **Automatic Delta Lake versioning**: Tracks all schema changes and data mutations
 - **GeoJSON parsing**: Extracts coordinates, magnitude, location, and event metadata
 - **Type-safe schema**: Ensures consistent numeric, string, and datetime types
@@ -64,6 +64,12 @@ uv run main.py
 
 # Stream earthquake data with a custom 10-second poll interval
 uv run main.py 10
+
+# Use a wider feed window for more global coverage
+uv run main.py --feed all_week
+
+# Available feeds: all_hour, all_day (default), all_week, all_month
+uv run main.py 10 --feed all_month
 
 # Or with pip
 python main.py
@@ -156,9 +162,10 @@ Each earthquake record contains:
 ## Data Source
 
 **USGS Earthquake Hazards Program** - Latest earthquake feed
-- Endpoint: `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson`
+- Endpoint: `https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson` (default)
+- Available feeds: `all_hour`, `all_day`, `all_week`, `all_month`
 - Updates: Approximately every minute
-- Coverage: Global seismic events in the past hour
+- Coverage: Global seismic events (the `all_day` default covers the past 24 hours, providing much better coverage of less active regions such as Europe and the Middle East)
 
 ## Architecture
 

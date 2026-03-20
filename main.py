@@ -14,10 +14,13 @@ DELTA_DIR = ROOT / "notebooks" / "data" / "earthquakes_delta_streamed"
 # Create the delta directory
 DELTA_DIR.mkdir(parents=True, exist_ok=True)
 
-# USGS GeoJSON API endpoint
-USGS_GEOJSON_URL = (
-    "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_hour.geojson"
-)
+# USGS GeoJSON API endpoint — use "all_day" by default for broader global
+# coverage (the "all_hour" feed rarely contains events from less seismically
+# active regions such as Europe and the Middle East).
+VALID_FEEDS = ("all_hour", "all_day", "all_week", "all_month")
+DEFAULT_FEED = "all_day"
+USGS_FEED_BASE = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary"
+USGS_GEOJSON_URL = f"{USGS_FEED_BASE}/{DEFAULT_FEED}.geojson"
 
 
 def normalize_feature(feature):
@@ -56,10 +59,10 @@ def normalize_feature(feature):
     }
 
 
-def fetch_events(timeout=10):
+def fetch_events(url=USGS_GEOJSON_URL, timeout=10):
     """Fetch current earthquake events from USGS feed"""
     try:
-        r = requests.get(USGS_GEOJSON_URL, timeout=timeout)
+        r = requests.get(url, timeout=timeout)
         r.raise_for_status()
         data = r.json()
         return [normalize_feature(f) for f in data.get("features", [])]
@@ -114,7 +117,9 @@ def coerce_schema(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def main(poll_interval: int=5):
+def main(poll_interval: int = 5, feed: str = DEFAULT_FEED):
+    feed_url = f"{USGS_FEED_BASE}/{feed}.geojson"
+    print(f"Using USGS feed: {feed_url}")
     delta_path = str(DELTA_DIR)
     events = {}  # Track unique events by ID
 
@@ -139,7 +144,7 @@ def main(poll_interval: int=5):
             iteration += 1
 
             # Fetch new events from API
-            new_feats = fetch_events()
+            new_feats = fetch_events(url=feed_url)
             new_count = 0
 
             for ev in new_feats:
@@ -199,5 +204,15 @@ if __name__ == "__main__":
         type=int,
         help="Poll interval in seconds (default: 5)",
     )
+    parser.add_argument(
+        "--feed",
+        choices=VALID_FEEDS,
+        default=DEFAULT_FEED,
+        help=(
+            f"USGS feed time window (default: {DEFAULT_FEED}). "
+            "Wider windows (all_week, all_month) include more events from "
+            "less seismically active regions."
+        ),
+    )
     args = parser.parse_args()
-    main(args.refresh_rate)
+    main(args.refresh_rate, feed=args.feed)
