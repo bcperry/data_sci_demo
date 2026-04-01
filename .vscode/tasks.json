@@ -1,0 +1,47 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run backend",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "main.py"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "earthquake-demo"
+            }
+        },
+        {
+            "label": "Run frontend",
+            "type": "shell",
+            "command": "uv",
+            "args": ["run", "streamlit", "run", "viewer.py"],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "earthquake-demo"
+            }
+        },
+        {
+            "label": "Run backend and frontend",
+            "dependsOn": ["Run backend", "Run frontend"],
+            "dependsOrder": "parallel",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        }
+    ]
+}
