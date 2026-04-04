@@ -49,6 +49,21 @@ def create_map_view(df: pd.DataFrame):
         projection="natural earth",
         title="Live Earthquake Locations",
     )
+    fig.update_geos(
+        showcountries=True,
+        countrycolor="#1f2937",
+        countrywidth=0.8,
+        showcoastlines=True,
+        coastlinecolor="#475569",
+        coastlinewidth=0.7,
+        showland=True,
+        landcolor="#f8fafc",
+        showocean=True,
+        oceancolor="#dbeafe",
+        showlakes=True,
+        lakecolor="#dbeafe",
+        bgcolor="white",
+    )
     fig.update_layout(height=650, margin={"l": 0, "r": 0, "t": 60, "b": 0})
     return fig
 
