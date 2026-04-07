@@ -21,6 +21,33 @@ VALID_FEEDS = ("all_hour", "all_day", "all_week", "all_month")
 DEFAULT_FEED = "all_day"
 USGS_FEED_BASE = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary"
 USGS_GEOJSON_URL = f"{USGS_FEED_BASE}/{DEFAULT_FEED}.geojson"
+EVENT_COLUMNS = (
+    "id",
+    "date",
+    "time_utc",
+    "magnitude",
+    "mag_type",
+    "type",
+    "status",
+    "place",
+    "tsunami",
+    "significance",
+    "net",
+    "code",
+    "ids",
+    "sources",
+    "types",
+    "nst",
+    "dmin",
+    "rms",
+    "gap",
+    "alert",
+    "url",
+    "detail",
+    "depth_km",
+    "longitude",
+    "latitude",
+)
 
 
 def normalize_feature(feature):
@@ -73,6 +100,12 @@ def fetch_events(url=USGS_GEOJSON_URL, timeout=10):
 
 def coerce_schema(df: pd.DataFrame) -> pd.DataFrame:
     """Ensure consistent schema for Delta Lake"""
+    df = df.copy()
+    for col in EVENT_COLUMNS:
+        if col not in df.columns:
+            df[col] = pd.NA
+    df = df.loc[:, EVENT_COLUMNS]
+
     # Ensure datetime with UTC
     if "time_utc" in df.columns:
         df["time_utc"] = pd.to_datetime(df["time_utc"], utc=True, errors="coerce")
